@@ -136,3 +136,8 @@ def delete_user(id):
     db.session.commit()
     return jsonify({}), 200
 
+@api.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({}), 200
+
+
