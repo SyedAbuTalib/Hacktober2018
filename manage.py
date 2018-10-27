@@ -2,13 +2,14 @@
 
 import os
 
-from flask_script import Manager
+from flask_script import Server, Manager
 
 from project import create_app, db, bcrypt
 from project.models.user import User
 
 app = create_app(os.getenv('PROJECT_CONFIG', 'default'))
 manager = Manager(app)
+manager.add_command("runserver", Server(host="0.0.0.0", port=9000))
 
 @manager.shell
 def make_shell_context():

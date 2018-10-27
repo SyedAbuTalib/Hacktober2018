@@ -1,16 +1,18 @@
-web:
-  build: .
-  command: python /code/app/app.py
-  ports:
-   - "8082:8082"
-  volumes:
-   - .:/code
-  links:
-   - db
-  hostname: myappserver
-db:
-  hostname: mysqlserver
-  image: orchardup/mysql
-  environment:
-     MYSQL_ROOT_PASSWORD: p@ssw0rd123
-     MYSQL_DATABASE: wordpress
+version: '3.4'
+services:
+  # db_mysql:
+  #   hostname: mysql
+  #   image: orchardup/mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: p@ssw0rd123
+  #     MYSQL_DATABASE: hacktober18  
+  web:
+    build: .
+    command: bash -c "python /code/manage.py runserver"
+    ports:
+    - "9000:9000"
+    volumes:
+    - .:/code
+    hostname: myappserver
+    environment:
+    - PROJECT_DEVELOPMENT_DATABASE_URI=mysql://root:@ssw0rd123@mysql/hacktober18
