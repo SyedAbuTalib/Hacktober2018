@@ -1,8 +1,3 @@
-# Hacktober2018
-Hackathon Project
+#Docker-Falsk-MySQL
 
-# Plan
-Use flask, mySQL, react, etc to make project.
-
-# Contributors
-Syed Abutalib, INSERT NAME HERE, ...
+Integrating Flask and MySQL database using Docker-compose https://docs.docker.com/compose/
