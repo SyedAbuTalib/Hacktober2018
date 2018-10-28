@@ -1,0 +1,25 @@
+{
+    "userIssue": {
+        "user_id": 1,
+        "issue_status": "unresolved",
+        "issue_origin": "user",
+        "priority": "high",
+        "issue_id": {            
+            "id" : 1,
+            "name": "billing",
+            "description": "url"}
+
+    },
+    "genIssues": [
+        {
+            "id" : 1,
+            "name": "billing",
+            "description": "url"
+        },
+        {
+            "id" : 2,
+            "name": "technical",
+            "description": "url"
+        }
+    ]
+}

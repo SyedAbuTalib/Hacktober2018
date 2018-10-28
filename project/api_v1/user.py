@@ -1,8 +1,9 @@
 from flask import jsonify, request
 
 from . import api
+from . import ml_engine
 from .. import db, bcrypt, login_manager
-from ..models.user import User
+from ..models.user import User, UserData, UserIssue, Issue
 from ..schemas.user import user_schema, users_schema, user_schema_secure, users_schema_secure
 from ..validator import validate_json, validate_schema
 from ..util import copy_not_null
@@ -24,32 +25,6 @@ def load_user(user_id):
 
 @api.route('/users/login', methods=['POST'])
 def login():
-    """
-    Login function
-    ---
-    consumes:
-      - application/json
-    tags:
-      - users
-    parameters:
-      - name: email
-        in: body
-	required: true
-        schema:
-          id: user_login
-          properties:
-            email:
-              type: string
-            password:
-              type: string
-          required: [email, password]
-          example:
-            email: ""
-            password: ""
-    responses:
-      401:
-       description: Authentication failed
-    """
     credentials = request.get_json()
     user = User.query.filter_by(email=credentials['email']).first()
     if user and bcrypt.check_password_hash(user.password, credentials['password']):
@@ -63,6 +38,39 @@ def logout():
     logout_user()
     return jsonify({}), 200
 
+@api.route('/user/help/<int:id>', methods=['GET'])
+def get_help(id):
+    user = User.query.get(id)
+    user_out = ml_engine.runEngineSingle(user)
+    # login for populatin issue table for users with possible issue
+    return jsonify({"user": 1}), 200
+
+@api.route('/user/issue/<int:id>', methods=['POST'])
+def post_issue(id):
+    data = request.get_json()
+    if data["issueType"] == 'specific':
+      userIssue = UserIssue.query.get(data["issueId"])
+      userIssue.issue_origin = "user"
+      userIssue.priority = "high"
+    else:
+      db.session.add(UserIssue(id, issue_status="unresolved", issue_origin="user", priority="high"))
+      db.session.commit()
+    # login for populatin issue table for users with possible issue
+    return jsonify({"posted": True}), 200
+
+@api.route('/user/issues/<int:id>', methods=['GET'])
+def get_issues(id):
+    issue = UserIssue.query.filter_by(user_id=id).first()
+    gen_Issues = Issue.query().all()
+    # login for populatin issue table for users with possible issue
+    return jsonify({"userIssue": issue, "genIssue": gen_Issues}), 200
+
+
+@api.route('/users', methods=['GET'])
+@login_required
+def get_users():
+    return users_schema_secure.dumps(User.query.all()) 
+
 @api.route('/users/logged')
 @login_required
 def get_current_user():
@@ -74,6 +82,19 @@ def get_user(id):
     if user is not None:
         return user_schema_secure.jsonify(User.query.get(id))
     return jsonify({}), 404
+
+@api.route('/user_data/<int:id>', methods=['GET'])
+def get_user_data(id):
+    user = UserData.query.filter_by(user_id=id).all()
+    return jsonify({"user": user}), 200
+
+@api.route('/run/ml', methods=['GET'])
+def run_ml():
+    users = User.query.all()
+    user_outs = ml_engine.runEngine(users)
+    # login for populatin issue table for users with possible issue
+    return jsonify({"user": 1}), 200
+
 
 @api.route('/users', methods=['POST'])
 def create_user():
