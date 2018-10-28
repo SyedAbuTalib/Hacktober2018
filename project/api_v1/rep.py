@@ -31,11 +31,11 @@ def updateIssueById(id):
     data = request.get_json()
     print(data)
     if issue:
-        issue.issue_status = data.issue
-        issue.priority = data.priority
-        issue.issue_id = data.type
+        issue.issue_status = data["issue"]
+        issue.priority = data["priority"]
+        issue.issue_id = data["type"]
         db.session.add(issue)
-        db.session.add(ChatTranscript(UserIssue_id, data.repId, data.details))
+        db.session.add(ChatTranscript(UserIssue_id, data["repId"], data["details"]))
         db.session.commit()
 
     # issue = UserIssue.query.filter_by(issue_id=id).all()
