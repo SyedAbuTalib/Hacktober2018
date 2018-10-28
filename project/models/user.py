@@ -1,15 +1,15 @@
 from .. import db
 from datetime import datetime
 
-user_datas = db.Table('user_data',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
-)
+# user_datas = db.Table('user_data',
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'))
+# )
 
-issues = db.Table('user_issue',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('authority_id', db.Integer, db.ForeignKey('authority.id'), primary_key=True)
-)
+# issues = db.Table('UserIssue',
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+#     db.Column('authority_id', db.Integer, db.ForeignKey('authority.id'), primary_key=True)
+# )
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -18,10 +18,10 @@ class User(db.Model):
     #firstname = db.Column(db.String(80))
     #lastname = db.Column(db.String(80))
     password = db.Column(db.String(80))
-    representative_issue = db.relationship('Representative_Issue', backref='User', lazy=True)
-    user_data = db.relationship('User_Data', backref='User', lazy=True)
-    user_issue = db.relationship('User_Issue', backref='User', lazy=True)
-    chat_transcripts = db.relationship('Chat_Transcript', backref='User', lazy=True)
+    RepresentativeIssue = db.relationship('RepresentativeIssue', backref='user', lazy=True)
+    user_data = db.relationship('UserData', backref='user', lazy=True)
+    UserIssue = db.relationship('UserIssue', backref='user', lazy=True)
+    # ChatTranscripts = db.relationship('ChatTranscript', backref='user', lazy=True)
     # Additional fields
 
     
@@ -45,16 +45,16 @@ class User(db.Model):
     def __repr__(self):
         return 'User {}>'.format(self)
 
-class User_Data(db.Model):
+class UserData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String(80))
     lastname = db.Column(db.String(80))
     age = db.Column(db.Integer)
     sex = db.Column(db.String(80))
     status = db.Column(db.String(80))
-    user_id = db.Column(db.Integer, db.ForeignKey('User.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     def __repr__(self):
-        return 'User_Data {}>'.format(self)
+        return 'UserData {}>'.format(self)
 
 
 class Representative(db.Model):
@@ -63,8 +63,8 @@ class Representative(db.Model):
     password = db.Column(db.String(80))
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
     enabled = db.Column(db.Boolean, default=True)
-    chat_transcripts = db.relationship('Chat_Transcript', backref='Representative', lazy=True)
-    representative_issues = db.relationship('Representative_Issue', backref='Representative', lazy=True)
+    ChatTranscripts = db.relationship('ChatTranscript', backref='Representative', lazy=True)
+    RepresentativeIssues = db.relationship('RepresentativeIssue', backref='Representative', lazy=True)
     # roles = db.relationship('Role', secondary=roles, backref=db.backref('users', lazy='dynamic'))
     # Additional fields
 
@@ -90,40 +90,41 @@ class Representative(db.Model):
         return 'Representative {}>'.format(self)
 
 
-class User_Issue(db.Model):
+class UserIssue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
     issue_status = db.Column(db.String(80))
     priority = db.Column(db.Integer)
     issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'), nullable=False)
-    chat_transcripts = db.relationship('Chat_Transcript', backref='User_Issue', lazy=True)
+    ChatTranscripts = db.relationship('ChatTranscript',  primaryjoin="UserIssue.id==ChatTranscript.UserIssue_id")
+    #  primaryjoin="Workgrp.workgrp_owner==Usrmst.id
     def __repr__(self):
-        return 'User_Issue {}>'.format(self)
+        return 'UserIssue {}>'.format(self)
 
 class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.Integer, primary_key=True)
-    user_issue = db.relationship('User_Issue', backref='User', lazy=True)
+    UserIssue = db.relationship('UserIssue', backref='User', lazy=True)
     def __repr__(self):
         return 'Issue {}>'.format(self)
 
 
-class Representative_Issue(db.Model):
+class RepresentativeIssue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
     representative_id = db.Column(db.Integer, db.ForeignKey('representative.id'), nullable=False)
-    user_issue_id = db.Column(db.Integer, db.ForeignKey('User_Issue.id'), nullable=False)
+    UserIssue_id = db.Column(db.Integer, db.ForeignKey('UserIssue.id'), nullable=False)
     def __repr__(self):
-        return 'Representative_Issue {}>'.format(self)
+        return 'RepresentativeIssue {}>'.format(self)
 
-class Chat_Transcript(db.Model):
+class ChatTranscript(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_issue_id = db.Column(db.Integer, db.ForeignKey('User_Issue.id'), nullable=False)
+    UserIssue_id = db.Column(db.Integer, db.ForeignKey('user_issue.id'), nullable=False)
     representative_id = db.Column(db.Integer, db.ForeignKey('representative.id'), nullable=False)
     issue = db.Column(db.String(80))
     message = db.Column(db.String(255))
     date = db.Column(db.DateTime, default=datetime.utcnow())
     def __repr__(self):
-        return 'Chat_Transcript {}>'.format(self)
+        return 'ChatTranscript {}>'.format(self)
