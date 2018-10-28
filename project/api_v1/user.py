@@ -64,7 +64,6 @@ def get_current_user():
     return user_schema_secure.jsonify(current_user)
 
 @api.route('/users/<int:id>', methods=['GET'])
-@login_required
 def get_user(id):
     user = User.query.get(id)
     if user is not None:
@@ -72,44 +71,12 @@ def get_user(id):
     return jsonify({}), 404
 
 @api.route('/users', methods=['POST'])
-@validate_json
-@login_required
 def create_user():
-    """
-    Create a user
-    ---
-    consumes:
-      - application/json
-    tags:
-      - users
-    parameters:
-      - name: user
-        in: body
-        required: true
-        schema:
-          type: object
-          id: user_create
-          properties:
-            email:
-              type: string
-            password:
-              type: string
-          example:
-            email: ""
-            password: ""
-    responses:
-      401:
-       description: Authentication failed
-    """ 
-    scheme = user_schema.load(request.get_json(), partial=True)
-    res = scheme.data
-    if not res.email or not res.password:
-        return jsonify({}), 400
-    if User.query.filter_by(email=res.email).first() is not None:
-        return user_schema_secure.jsonify(User.query.filter_by(email=res.email).first()), 409
-    db.session.add(User(res.email, bcrypt.generate_password_hash(res.password), res.username))
+    data = request.get_json()
+    print(data["email"])
+    db.session.add(User(data["email"], data["username"], data["password"]))
     db.session.commit()
-    return user_schema_secure.jsonify(res)
+    return jsonify({"issue": 1}), 200
 
 
 @api.route('/users/<int:id>', methods=['PUT'])
