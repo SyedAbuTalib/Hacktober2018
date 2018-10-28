@@ -8,6 +8,7 @@ from ..schemas.user import user_schema, users_schema, user_schema_secure, users_
 from ..validator import validate_json, validate_schema
 from ..util import copy_not_null
 from flask_login import login_user, logout_user, login_required, current_user
+import json
 
 
 from dummy import create_users
@@ -40,15 +41,15 @@ def logout():
 
 @api.route('/user/help/<int:id>', methods=['GET'])
 def get_help(id):
-    user = User.query.get(id)
-    user_out = ml_engine.runEngineSingle(user)
+    # user = User.query.get(id)
+    # user_out = ml_engine.runEngineSingle(user)
     # login for populatin issue table for users with possible issue
     return jsonify({"user": 1}), 200
 
-@api.route('/user/issue/<int:id>', methods=['POST'])
+@api.route('/user/issues/<int:id>', methods=['POST'])
 def post_issue(id):
     data = request.get_json()
-    if data["issueType"] == 'specific':
+    if data["type"] == 'specific':
       userIssue = UserIssue.query.get(data["issueId"])
       userIssue.issue_origin = "user"
       userIssue.priority = "high"
@@ -60,14 +61,19 @@ def post_issue(id):
 
 @api.route('/user/issues/<int:id>', methods=['GET'])
 def get_issues(id):
-    issue = UserIssue.query.filter_by(user_id=id).first()
-    gen_Issues = Issue.query().all()
+    # issue = UserIssue.query.filter_by(user_id=id).first()
+    gen_Issues = Issue.query.all()
+    res =[]
+    for row in gen_Issues:
+      rw = row.as_dict()
+      rw["type"] = "generic"
+      res.append(rw)
     # login for populatin issue table for users with possible issue
-    return jsonify({"userIssue": issue, "genIssue": gen_Issues}), 200
+    # posts=list(BlogPost.query.all())
+    return jsonify({"genIssues": res}), 200
 
 
 @api.route('/users', methods=['GET'])
-@login_required
 def get_users():
     return users_schema_secure.dumps(User.query.all()) 
 

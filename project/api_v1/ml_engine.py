@@ -3,7 +3,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from . import data
 
-dtree_model = null
+dtree_model = False
 
 
 def runEngine(users):

@@ -79,7 +79,7 @@ class Representative(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80))
-    created_date = db.Column(db.DateTime, default=datetime.utcnow())
+    created_date = db.Column(db.String(100), default=datetime.utcnow())
     enabled = db.Column(db.Boolean, default=True)
     ChatTranscripts = db.relationship('ChatTranscript', backref='Representative', lazy=True)
     RepresentativeIssues = db.relationship('RepresentativeIssue', backref='Representative', lazy=True)
@@ -111,7 +111,7 @@ class Representative(db.Model):
 class UserIssue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.utcnow())
+    date = db.Column(db.String(100), default=datetime.utcnow())
     issue_status = db.Column(db.String(80))
     issue_origin = db.Column(db.String(80))
     priority = db.Column(db.Integer)
@@ -128,12 +128,14 @@ class Issue(db.Model):
     UserIssue = db.relationship('UserIssue', backref='User', lazy=True)
     def __repr__(self):
         return 'Issue {}>'.format(self)
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class RepresentativeIssue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    date = db.Column(db.DateTime, default=datetime.utcnow())
+    date = db.Column(db.String(100), default=datetime.utcnow())
     representative_id = db.Column(db.Integer, db.ForeignKey('representative.id'), nullable=False)
     UserIssue_id = db.Column(db.Integer, db.ForeignKey('user_issue.id'), nullable=False)
     def __repr__(self):
@@ -145,6 +147,6 @@ class ChatTranscript(db.Model):
     representative_id = db.Column(db.Integer, db.ForeignKey('representative.id'), nullable=False)
     # issue = db.Column(db.String(80))
     message = db.Column(db.String(255))
-    date = db.Column(db.DateTime, default=datetime.utcnow())
+    date = db.Column(db.String(100), default=datetime.utcnow())
     def __repr__(self):
         return 'ChatTranscript {}>'.format(self)
