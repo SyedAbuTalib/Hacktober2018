@@ -8,6 +8,16 @@ from ..validator import validate_json, validate_schema
 from ..util import copy_not_null
 from flask_login import login_user, logout_user, login_required, current_user
 
+
+from dummy import create_users
+
+def set_up():
+  fakes = create_users()
+  for i in fakes:
+    db.session.add(User(fakes[i][1], fakes[i][0], fakes[i][2]))
+  db.session.commit()
+  return jsonify(fakes)
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter(User.id == int(user_id)).first()
@@ -53,11 +63,6 @@ def logout():
     logout_user()
     return jsonify({}), 200
 
-@api.route('/users', methods=['GET'])
-@login_required
-def get_users():
-    return users_schema_secure.dumps(User.query.all()) 
-
 @api.route('/users/logged')
 @login_required
 def get_current_user():
@@ -77,6 +82,12 @@ def create_user():
     db.session.add(User(data["email"], data["username"], data["password"]))
     db.session.commit()
     return jsonify({"issue": 1}), 200
+
+@api.route('/users', methods=['GET'])
+def list_user():
+    data = User.query.all()
+    return jsonify({"users": data}), 200
+
 
 
 @api.route('/users/<int:id>', methods=['PUT'])
@@ -105,6 +116,7 @@ def delete_user(id):
 
 @api.route('/health', methods=['GET'])
 def health_check():
+    set_up()
     return jsonify({}), 200
 
 
