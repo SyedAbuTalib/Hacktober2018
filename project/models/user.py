@@ -113,6 +113,7 @@ class UserIssue(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
     issue_status = db.Column(db.String(80))
+    issue_origin = db.Column(db.String(80))
     priority = db.Column(db.Integer)
     issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'), nullable=False)
     ChatTranscripts = db.relationship('ChatTranscript',  primaryjoin="UserIssue.id==ChatTranscript.UserIssue_id")
@@ -122,7 +123,8 @@ class UserIssue(db.Model):
 
 class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    description = db.Column(db.String(200))
     UserIssue = db.relationship('UserIssue', backref='User', lazy=True)
     def __repr__(self):
         return 'Issue {}>'.format(self)
