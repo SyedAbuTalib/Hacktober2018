@@ -54,7 +54,7 @@ def post_issue(id):
       userIssue.issue_origin = "user"
       userIssue.priority = "high"
     else:
-      db.session.add(UserIssue(id, issue_status="unresolved", issue_origin="user", priority="high"))
+      db.session.add(UserIssue(id, issue_status="unresolved", issue_origin="user", priority="high", issue_id=data["id"]))
       db.session.commit()
     # login for populatin issue table for users with possible issue
     return jsonify({"posted": True}), 200
@@ -68,6 +68,10 @@ def get_issues(id):
       rw = row.as_dict()
       rw["type"] = "generic"
       res.append(rw)
+    res.append({            "description": "Billing Issue dated 10/10/2018",
+            "id": 1111,
+            "name": "Billing",
+            "type": "specific"})
     # login for populatin issue table for users with possible issue
     # posts=list(BlogPost.query.all())
     return jsonify({"genIssues": res}), 200

@@ -6,10 +6,10 @@ from flask_script import Server, Manager
 
 from project import create_app, db, bcrypt
 from project.models.user import User
-from flask_cors import CORS
+
 
 app = create_app(os.getenv('PROJECT_CONFIG', 'default'))
-CORS(app)
+
 
 manager = Manager(app)
 manager.add_command("runserver", Server(host="0.0.0.0", port=9000))

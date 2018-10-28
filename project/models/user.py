@@ -73,6 +73,8 @@ class UserData(db.Model):
     amnt_disconnections_ten_min = db.Column(db.Integer)
     def __repr__(self):
         return 'UserData {}>'.format(self)
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class Representative(db.Model):
@@ -120,6 +122,16 @@ class UserIssue(db.Model):
     #  primaryjoin="Workgrp.workgrp_owner==Usrmst.id
     def __repr__(self):
         return 'UserIssue {}>'.format(self)
+    def __init__(self, user_id, issue_status, issue_origin, priority, issue_id):
+        self.user_id = user_id
+        self.issue_status = issue_status
+        self.issue_origin = issue_origin
+        self.priority = priority
+        self.issue_id = issue_id
+        #self.username = email if
+    def as_dict(self):
+       return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
 
 class Issue(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -140,6 +152,8 @@ class RepresentativeIssue(db.Model):
     UserIssue_id = db.Column(db.Integer, db.ForeignKey('user_issue.id'), nullable=False)
     def __repr__(self):
         return 'RepresentativeIssue {}>'.format(self)
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class ChatTranscript(db.Model):
     id = db.Column(db.Integer, primary_key=True)

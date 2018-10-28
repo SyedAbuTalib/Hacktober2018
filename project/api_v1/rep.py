@@ -2,7 +2,7 @@ from flask import jsonify, request
 
 from . import api
 from .. import db, bcrypt, login_manager
-from ..models.user import Representative, UserIssue, RepresentativeIssue
+from ..models.user import Representative, UserIssue, RepresentativeIssue, UserData
 from ..validator import validate_json, validate_schema
 from ..util import copy_not_null
 
@@ -13,16 +13,17 @@ from ..util import copy_not_null
 @api.route('/rep/<int:id>', methods=['GET'])
 def getIssue(id):
     print(id)
-    issue = RepresentativeIssue.query.filter_by(representative_id=id).all()
-    print(issue)
-    return jsonify({"issue": issue}), 200
+    issue = RepresentativeIssue.query.filter_by(representative_id=id).first()
+    # print(issue)
+    return jsonify({"issue": issue.as_dict()}), 200
 
 @api.route('/rep/issue/<int:id>', methods=['GET'])
 def getIssueById(id):
     print(id)
-    issue = UserIssue.query.filter_by(issue_id=id).all()
-    print(issue)
-    return jsonify({"issue": issue}), 200
+    issue = UserIssue.query.filter_by(user_id=id).first()
+    udata = UserData.query.filter_by(user_id=id).first()
+    # print(issue)
+    return jsonify({"issue": issue.as_dict(), "userdata": udata.as_dict()}), 200
 
 @api.route('/rep/issue/<int:id>', methods=['POST'])
 def updateIssueById(id):
