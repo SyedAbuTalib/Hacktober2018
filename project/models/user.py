@@ -115,7 +115,7 @@ class RepresentativeIssue(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow())
     representative_id = db.Column(db.Integer, db.ForeignKey('representative.id'), nullable=False)
-    UserIssue_id = db.Column(db.Integer, db.ForeignKey('UserIssue.id'), nullable=False)
+    UserIssue_id = db.Column(db.Integer, db.ForeignKey('user_issue.id'), nullable=False)
     def __repr__(self):
         return 'RepresentativeIssue {}>'.format(self)
 
@@ -123,7 +123,7 @@ class ChatTranscript(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     UserIssue_id = db.Column(db.Integer, db.ForeignKey('user_issue.id'), nullable=False)
     representative_id = db.Column(db.Integer, db.ForeignKey('representative.id'), nullable=False)
-    issue = db.Column(db.String(80))
+    # issue = db.Column(db.String(80))
     message = db.Column(db.String(255))
     date = db.Column(db.DateTime, default=datetime.utcnow())
     def __repr__(self):

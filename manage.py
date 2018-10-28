@@ -20,8 +20,8 @@ def make_shell_context():
 def create_db():
     '''Creates the db tables.'''
     db.create_all()
-    db.session.add(User('root', bcrypt.generate_password_hash('root'), None))
-    db.session.commit()
+    # db.session.add(User('root', bcrypt.generate_password_hash('root'), None))
+    # db.session.commit()
 
 @manager.command
 def drop_db():
