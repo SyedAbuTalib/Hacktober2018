@@ -63,7 +63,7 @@ class Representative(db.Model):
     password = db.Column(db.String(80))
     created_date = db.Column(db.DateTime, default=datetime.utcnow())
     enabled = db.Column(db.Boolean, default=True)
-    roles = db.relationship('Role', secondary=roles, backref=db.backref('users', lazy='dynamic'))
+    # roles = db.relationship('Role', secondary=roles, backref=db.backref('users', lazy='dynamic'))
     # Additional fields
 
     
